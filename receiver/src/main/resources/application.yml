@@ -9,7 +9,7 @@ spring:
     # 单机配置
     host: 10.10.223.104
     port: 6379
-  # password:
+    password: ${REDIS_PASSWORD}
   # 哨兵配置
   # sentinel:
   #  master: gct
@@ -32,7 +32,7 @@ spring:
     clickhouse:
       jdbc-url: jdbc:clickhouse://10.10.220.188:8123/default
       username: default
-      password:
+      password: ${CLICKHOUSE_PASSWORD}
 receiver:
   thread-count: 2
   project-list: clklogapp

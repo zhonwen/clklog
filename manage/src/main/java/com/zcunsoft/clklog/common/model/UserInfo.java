@@ -52,4 +52,9 @@ public class UserInfo implements Serializable {
      */
     private String modifyuser;
 
+    /**
+     * 首次登录必须改密
+     */
+    private Boolean pwdResetRequired;
+
 }

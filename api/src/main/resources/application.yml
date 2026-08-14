@@ -17,7 +17,7 @@ spring:
     clickhouse:
       jdbc-url: jdbc:clickhouse://localhost:8123/default
       username: default
-      password: 123456
+      password: ${CLICKHOUSE_PASSWORD}
       driver-class-name: com.clickhouse.jdbc.ClickHouseDriver
       connection-timeout: 20000
       socket-timeout: 60000
@@ -26,7 +26,7 @@ spring:
     host: 10.10.220.37
     port: 6379
     database: 0
-    password:
+    password: ${REDIS_PASSWORD}
     lettuce:
       pool:
         min-idle: 4
@@ -34,7 +34,7 @@ spring:
         max-active: 4
 token:
   header: Authorization
-  secret: c609737e578978eccc64cef4be680
+  secret: ${TOKEN_SECRET}
   expireTime: 300
 logging:
   file:

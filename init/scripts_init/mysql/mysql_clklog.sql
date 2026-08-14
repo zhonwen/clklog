@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `tbl_project` (
 
 
 LOCK TABLES `tbl_project` WRITE;
-INSERT INTO `tbl_project` VALUES ('90a86ab1-614f-030e-3938-7cacdb2a7e6a','clklogapp','clklog',NULL,NULL,NULL,NULL,NULL,'','已保存',now(),now(),'ddf51db3-7c99-1310-a44f-79feb7b63c69');
+INSERT INTO `tbl_project` VALUES ('90a86ab1-614f-030e-3938-7cacdb2a7e6a','clklogapp','clklog',NULL,NULL,NULL,NULL,NULL,'','已保存',now(),now(),UUID());
 UNLOCK TABLES;
 
 
@@ -113,14 +113,12 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `modifyuser` varchar(255) DEFAULT NULL COMMENT '修改人',
   `modifytime` datetime(6) DEFAULT NULL COMMENT '修改时间',
   `lastlogintime` datetime(6) DEFAULT NULL COMMENT '最新登录时间',
+  `pwd_reset_required` tinyint(1) NOT NULL DEFAULT 1 COMMENT '首次登录必须改密',
   PRIMARY KEY (`user_id`) USING BTREE,
   KEY `i_user_name` (`user_name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户表';
 
-
-LOCK TABLES `sys_user` WRITE;
-INSERT INTO `sys_user` VALUES ('00851690-cdc0-4702-a153-fea656d207a3','admin','管理员','$2a$10$6bdwCqDF348m1v1QsnteHuNalhKUEHBCJ8duZ1Yv8E1ur5fCYQfkS',NULL,'2024-05-10 15:22:46.000000',NULL,'2024-05-30 13:50:16.912000',NULL),('3dbb17ba-d9a8-46a7-a86d-e33aa972b8d4','test','test','$2a$10$MjKpyU.LZBlxq9oDK525vuWA.EQcNvoaljLTJSIsEAGlfslF/NwoC',NULL,'2024-06-12 11:11:57.420000',NULL,'2024-06-12 11:12:13.774000',NULL),('f57cfab7-5aaf-4b5e-96e2-706ae08c55c5','clklog','clklog','$2a$10$nUSndaWG9ky6KC75..Av.OmNIEeg2eEbx7jlwZOyQJaBQ6C7h6G3G',NULL,'2024-05-30 10:38:58.733000',NULL,'2024-05-30 10:39:41.359000',NULL);
-UNLOCK TABLES;
+-- 默认管理员由 clklog-manage 启动时按 CLKLOG_BOOTSTRAP_ADMIN_PASSWORD 创建，并强制首次改密。不预置弱口令账号。
 
 CREATE TABLE IF NOT EXISTS `sys_userlogin` (
   `token` varchar(200) NOT NULL COMMENT 'token',

@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,6 +63,17 @@ public class TokenService {
 
     private final TypeReference<LoginUser> loginUserTypeReference = new TypeReference<LoginUser>() {
     };
+
+    static void requireHs512Secret(String secret) {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 64) {
+            throw new IllegalStateException("token.secret must be at least 64 bytes for HS512");
+        }
+    }
+
+    @PostConstruct
+    public void validateSecret() {
+        requireHs512Secret(secret);
+    }
 
     /**
      * 获取用户身份信息

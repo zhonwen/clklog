@@ -2,6 +2,7 @@ package com.zcunsoft.clklog.security.filter;
 
 import com.zcunsoft.clklog.common.model.LoginUser;
 import com.zcunsoft.clklog.common.utils.SecurityUtils;
+import com.zcunsoft.clklog.common.utils.ServletUtils;
 import com.zcunsoft.clklog.security.service.TokenService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +37,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }
+        if (loginUser != null && loginUser.getUser() != null
+                && Boolean.TRUE.equals(loginUser.getUser().getPwdResetRequired())) {
+            String path = request.getServletPath();
+            if (!"/auth/modifyPassword".equals(path) && !"/logout".equals(path)) {
+                ServletUtils.renderString(response, "{\"code\":403,\"msg\":\"必须先修改初始密码\",\"data\":\"\"}");
+                return;
+            }
         }
         chain.doFilter(request, response);
     }

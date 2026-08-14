@@ -70,4 +70,10 @@ public class User implements Serializable {
      */
     @Column(columnDefinition = "DATETIME(3)")
     private Timestamp lastlogintime;
+
+    /**
+     * 首次登录必须改密.
+     */
+    @Column(nullable = false)
+    private Boolean pwdResetRequired = Boolean.FALSE;
 }

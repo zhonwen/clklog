@@ -24,12 +24,15 @@ import org.apache.flink.util.Collector;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JieXiJson {
 
     public static void main(String[] args) throws Exception {
-        ParameterTool parameters = ParameterTool.fromPropertiesFile(System.getProperty("user.dir") + File.separator + "config.properties");
+        ParameterTool parameters = overlayRequiredSecrets(
+                ParameterTool.fromPropertiesFile(System.getProperty("user.dir") + File.separator + "config.properties"));
 
         String kafkaBootstrapServers = parameters.get("kafka.bootstrap.server", "localhost:9092");
         String flinkCheckPoint = parameters.get("flink.checkpoint", "file:///usr/local/services/clklogprocessing/checkpoints");
@@ -81,6 +84,22 @@ public class JieXiJson {
         valueInWindow.addSink(clickhouseSink);
 
         env.execute(parameters.get("flink.clklog-job-name", "clklog-processing"));
+    }
+
+    private static ParameterTool overlayRequiredSecrets(ParameterTool parameters) {
+        Map<String, String> overlay = new HashMap<String, String>();
+        overlay.put("clickhouse.password", requireSecret(parameters, "clickhouse.password", "CLICKHOUSE_PASSWORD"));
+        overlay.put("redis.password", requireSecret(parameters, "redis.password", "REDIS_PASSWORD"));
+        return parameters.mergeWith(ParameterTool.fromMap(overlay));
+    }
+
+    private static String requireSecret(ParameterTool parameters, String key, String envName) {
+        String fromEnv = System.getenv(envName);
+        String value = (fromEnv != null && !fromEnv.isEmpty()) ? fromEnv : parameters.get(key, "");
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalStateException(envName + " or " + key + " is required");
+        }
+        return value;
     }
 }
 

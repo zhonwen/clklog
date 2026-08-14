@@ -254,6 +254,7 @@ public class UserServiceImpl implements IUserService {
                 User user = optUser.get();
                 if (SecurityUtils.matchesPassword(authModifyPasswordDTO.getOldPassword(), user.getPassword())) {
                     user.setPassword(SecurityUtils.encryptPassword(authModifyPasswordDTO.getNewPassword()));
+                    user.setPwdResetRequired(Boolean.FALSE);
                     userRepository.save(user);
                     msg = "修改密码成功";
                     code = ErrorCode.Success;
