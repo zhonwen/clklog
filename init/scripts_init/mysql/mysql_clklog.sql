@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `modifyuser` varchar(255) DEFAULT NULL COMMENT '修改人',
   `modifytime` datetime(6) DEFAULT NULL COMMENT '修改时间',
   `lastlogintime` datetime(6) DEFAULT NULL COMMENT '最新登录时间',
-  `pwd_reset_required` tinyint(1) NOT NULL DEFAULT 1 COMMENT '首次登录必须改密',
+  `pwd_reset_required` tinyint(1) NOT NULL DEFAULT 0 COMMENT '首次登录必须改密',
   PRIMARY KEY (`user_id`) USING BTREE,
   KEY `i_user_name` (`user_name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户表';

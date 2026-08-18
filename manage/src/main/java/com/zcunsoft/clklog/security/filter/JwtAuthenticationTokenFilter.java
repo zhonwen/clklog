@@ -39,7 +39,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
         if (loginUser != null && loginUser.getUser() != null
-                && Boolean.TRUE.equals(loginUser.getUser().getPwdResetRequired())) {
+                && Boolean.TRUE.equals(loginUser.getUser().getPwdResetRequired())
+                && !isOfficialDefaultAccount(loginUser.getUser().getUserName())) {
             String path = request.getServletPath();
             if (!"/auth/modifyPassword".equals(path) && !"/logout".equals(path)) {
                 ServletUtils.renderString(response, "{\"code\":403,\"msg\":\"必须先修改初始密码\",\"data\":\"\"}");
@@ -47,5 +48,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    /** 镜像版预置的官方默认账号，升级后保持可登录，不走强制改密。 */
+    private boolean isOfficialDefaultAccount(String userName) {
+        return "admin".equals(userName) || "clklog".equals(userName);
     }
 }
